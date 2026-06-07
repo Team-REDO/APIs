@@ -4,6 +4,8 @@ A collection of REST, SOAP, GraphQL, gRPC &amp; Websocket API's including exampl
 If you see this you are in the root repository with sub-modules!
 - Contact another developer e.g. "Camilla", if something went wrong or it did not succeceed - we all make mistakes, so let's help eachother out soonest <3 And this README needs to be updated... xD
 
+https://git-scm.com/book/en/v2/Git-Tools-Submodules for Git's documentation for more info and commands.
+
 ## Sub-modules commands 
 - Cheat-sheet for developers
 
@@ -17,7 +19,7 @@ Replace [the repository-link] with the same link you will use for cloning the re
 
 #### BUT... My sub-modules are empty ???!?!?
 Don't worry:
-1. Keep the terminal in the same path ase you have generated your clone
+1. Keep the terminal in the same path as you have generated your clone
 2. Run following command:
 ``` git submodule init ``` 
 and then:
@@ -38,7 +40,7 @@ Replace [a message about changes] with a revelevant message:
 ``` git commit -am [a message about changes] ```
 6. You can now push YOUR NEW BRANCH to git by standing in your new branch with this command, BUT...
 Replace [your branch-name] with the name of your actuel new branch - should be an exact copy of name!
-``` git push origin [your branch-name] ```
+``` git push [your branch-name] ``` (maybe use ``` git push origin [your branch-name] ``` but be carefull if you work on a forked project!)
 7. Tjek by refreshing the Github website and see if the commit has been added to YOUR NEW BRANCH
  - CONTACT another developer e.g. "Camilla", if something went wrong or it did not succeceed - we all make mistakes, so let's help eachother out soonest <3 And this README needs to be updated... xD
 
