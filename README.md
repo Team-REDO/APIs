@@ -7,6 +7,23 @@ If you see this you are in the root repository with sub-modules!
 ## Sub-modules commands 
 - Cheat-sheet for developers
 
+### How clone and get all sub-modules?
+1. Open a terminal (CMD, gitBash, etc.)
+2. In terminal: Make sure to stand in the folder, where you want to add the repository
+(No need for create a new folder)
+3. Run git clone like this command in terminal, BUT...
+Replace [the repository-link] with the same link you will use for cloning the repository:
+``` git clone [the repository-link] ```
+
+#### BUT... My sub-modules are empty ???!?!?
+Don't worry:
+1. Keep the terminal in the same path ase you have generated your clone
+2. Run following command:
+``` git submodule init ``` 
+and then:
+``` git submodule update ```
+3. Your sub-modules should be downloaded by now (or contact "Camilla")
+
 ### How to add a new repo (sub-module)?
 Adding a repository as a sub-module:
 1. Open a terminal (CMD, gitBash, etc.)
