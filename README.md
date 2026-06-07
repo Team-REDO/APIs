@@ -15,9 +15,12 @@ https://git-scm.com/book/en/v2/Git-Tools-Submodules for Git's documentation for 
 (No need for create a new folder)
 3. Run git clone like this command in terminal, BUT...
 Replace [the repository-link] with the same link you will use for cloning the repository:
-``` git clone [the repository-link] ```
+``` git clone --recurse-submodules [the repository-link] ```
+4. If this work you should have the root repository and all sub-modules downloaded by now (or contact "Camilla") - if not, try the next step below.
 
-#### BUT... My sub-modules are empty ???!?!?
+### It did not work - what now?
+Try clone as you normally would with this command in terminal with git clone....
+#### I only got the root repository, but no sub-modules... What do I do now?
 Don't worry:
 1. Keep the terminal in the same path as you have generated your clone
 2. Run following command:

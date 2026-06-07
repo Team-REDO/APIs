@@ -5,4 +5,8 @@
 [submodule "SoapApi"]
 	path = SoapApi
 	url = https://github.com/alla2297/SoapApi.git
-	branch = master
+	branch = removingDockerCompose
+[submodule "WebsocketApi"]
+	path = WebsocketApi
+	url = https://github.com/ACHChristensen/WebsocketAPI_SI_Exam.git
+	branch = ACHChristensen-Dockerfile-1

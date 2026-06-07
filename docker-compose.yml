@@ -1,7 +1,7 @@
 # Docker Compose Configuration for Concert API, SOAP API, and WebSocket API
 # Orchestrates all .NET services with shared MySQL database
 
-version: '3.8'
+version: "3.8"
 
 services:
   # ============================
@@ -15,9 +15,9 @@ services:
       MYSQL_DATABASE: concertdb
       MYSQL_USER: concertuser
       MYSQL_PASSWORD: concertpass123
-      TZ: 'UTC'
+      TZ: "UTC"
     ports:
-      - "3306:3306"
+      - "3307:3307"
     volumes:
       # Persist MySQL data between container restarts
       - mysql_data:/var/lib/mysql
@@ -28,7 +28,17 @@ services:
     networks:
       - apis_network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword123"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-prootpassword123",
+        ]
       timeout: 10s
       retries: 5
       interval: 10s
@@ -45,7 +55,7 @@ services:
     container_name: apis_concertapi
     environment:
       # Override connection string for Docker environment
-      ConnectionStrings__Default: "server=mysql;port=3306;database=concertdb;user=root;password=rootpassword123;"
+      ConnectionStrings__Default: "server=mysql;port=3307;database=concertdb;user=root;password=rootpassword123;"
     ports:
       - "8000:8080"
     networks:
@@ -99,7 +109,7 @@ services:
     container_name: apis_websocketapi
     environment:
       # Database Configuration
-      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=websocketdb;User=websocketuser;Password=websocketpass123;"
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3307;Database=websocketdb;User=websocketuser;Password=websocketpass123;"
     ports:
       - "5001:5001"
     networks:
@@ -108,7 +118,14 @@ services:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "--insecure", "https://localhost:5001/api/csrf-token"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "--insecure",
+          "https://localhost:5001/api/csrf-token",
+        ]
       timeout: 10s
       retries: 5
       interval: 15s
