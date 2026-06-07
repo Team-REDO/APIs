@@ -53,11 +53,16 @@ Replace [your branch-name] with the name of your actuel new branch - should be a
 
 
 ### How do I update a sub-module iiiin this root repository, if there is any updates in the original repository some-where else?
-To update a sub-module with the newest from branch, write this command in terminal, BUT...
-Replace [the repository/sub-module -link] with the same link you will use for cloning the repository:
-``` git submodule update --remote [the repository/sub-module -link] ```
+This one it tricky...
+To update a sub-module with the newest from branch:
+1. Stand in terminal in the root of this repository (the repository collecting all sub-modules)!
+2. Write this command in terminal, BUT...
+Replace [the repository/sub-module -name] with the exact name from .git folder or fromm .gitmodules file in the root of THIS repository (the repository collecting all sub-modules):
+``` git submodule update --remote [the repository/sub-module -name] ```
+3. The module should now be updated with the newest from given branch (or contact "Camilla" if it did not work). Repeat the process for other submodules if needed.
 
 ### How to change or see which branch the sub-module updates from?
+VERY TRICKY - Not recommended for beginners, but here is how you can do it:
 To see or change the branch for the sub-modules: 
 1. Go to .gitmodules file in the root of THIS repository (the repository collecting all sub-modules).  
 2. (Optional) - You can change it as well but make sure the branch name is an exact copy of orignal branch name from remote repository (the sub-module's origin).
