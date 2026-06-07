@@ -1,5 +1,5 @@
-# Docker Compose Configuration for Concert API and SOAP API
-# Orchestrates both .NET services with their MySQL databases
+# Docker Compose Configuration for Concert API, SOAP API, and WebSocket API
+# Orchestrates all .NET services with shared MySQL database
 
 version: '3.8'
 
@@ -24,6 +24,7 @@ services:
       # Initialize databases with SQL scripts
       - ./ConcertApi/DBV2.0.sql:/docker-entrypoint-initdb.d/01-concert-init.sql
       - ./SoapApi/init-soapdb.sql:/docker-entrypoint-initdb.d/02-soap-init.sql
+      - ./WebsocketApi/init-websocketdb.sql:/docker-entrypoint-initdb.d/03-websocket-init.sql
     networks:
       - apis_network
     healthcheck:
@@ -82,6 +83,32 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      timeout: 10s
+      retries: 5
+      interval: 15s
+      start_period: 30s
+    restart: unless-stopped
+
+  # ============================
+  # WebSocket API Service
+  # ============================
+  websocketapi:
+    build:
+      context: ./WebsocketApi
+      dockerfile: Dockerfile
+    container_name: apis_websocketapi
+    environment:
+      # Database Configuration
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=websocketdb;User=websocketuser;Password=websocketpass123;"
+    ports:
+      - "5001:5001"
+    networks:
+      - apis_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "--insecure", "https://localhost:5001/api/csrf-token"]
       timeout: 10s
       retries: 5
       interval: 15s

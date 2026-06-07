@@ -1,6 +1,6 @@
-# Docker Setup for Concert API and SOAP API
+# Docker Setup for Concert API, SOAP API, and WebSocket API
 
-This directory contains Docker configurations for building and running both the Concert API and SOAP API services with MySQL databases.
+This directory contains Docker configurations for building and running the Concert API, SOAP API, and WebSocket API services with MySQL databases.
 
 ## Services Overview
 
@@ -24,6 +24,17 @@ This directory contains Docker configurations for building and running both the 
   - Password: soappassword123
   - Database: soapdb
 
+### WebSocket API
+- **Type**: WebSocket Chat API with JWT Authentication
+- **.NET Version**: 10.0 (latest)
+- **Database**: MySQL (websocketdb)
+- **Default Port**: 5001 (HTTPS)
+- **Database Credentials**:
+  - User: websocketuser
+  - Password: websocketpass123
+  - Database: websocketdb
+- **Features**: Real-time chat, CSRF protection, rate limiting
+
 ## File Structure
 
 ```
@@ -34,10 +45,15 @@ This directory contains Docker configurations for building and running both the 
 │   ├── entrypoint.sh           # Startup script with DB healthcheck
 │   ├── DBV2.0.sql              # Database schema and initial data
 │   └── ... (other service files)
-└── SoapApi/
-    ├── Dockerfile              # Multi-stage build for SoapAPI
+├── SoapApi/
+│   ├── Dockerfile              # Multi-stage build for SoapAPI
+│   ├── entrypoint.sh           # Startup script with DB healthcheck
+│   ├── init-soapdb.sql         # Database user and database creation
+│   └── ... (other service files)
+└── WebsocketApi/
+    ├── Dockerfile              # Multi-stage build for WebSocket API
     ├── entrypoint.sh           # Startup script with DB healthcheck
-    ├── init-soapdb.sql         # Database user and database creation
+    ├── init-websocketdb.sql    # Database user and database creation
     └── ... (other service files)
 ```
 
@@ -81,6 +97,7 @@ Once running, you can access the services at:
 
 - **ConcertAPI Swagger**: http://localhost:8000/swagger/index.html
 - **SoapAPI Swagger**: http://localhost:8001/swagger/index.html
+- **WebSocket API**: https://localhost:5001/ws/{userId} (WebSocket endpoint)
 - **MySQL**: localhost:3306
 
 ## Database Initialization
@@ -100,6 +117,13 @@ Once running, you can access the services at:
   - 1 supplier "ABC Supplies" (created via migrations)
   - Tables: Suppliers, Products, PurchaseOrders, PurchaseOrderLines, AuditLogs
 - **Connection String**: Points to `soapdb` as soapuser
+
+### WebSocket API Database
+- **Schema**: Created from `WebsocketApi/init-websocketdb.sql`
+- **Migrations**: Entity Framework Core migrations run on application startup
+- **Seeded Data**: 5 sample users and chat rooms with messages (from SeedData.sql)
+- **Tables**: Users, ChatRooms, ChatMessages, UsersHasChatRooms
+- **Connection String**: Points to `websocketdb` as websocketuser
 
 ## Stopping Services
 

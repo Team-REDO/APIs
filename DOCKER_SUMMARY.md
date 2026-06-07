@@ -15,6 +15,11 @@
 - **entrypoint.sh** - Startup script with MySQL health check
 - **init-soapdb.sql** - Database initialization (user and database creation)
 
+### WebsocketApi/
+- **Dockerfile** - Multi-stage build for .NET 10.0 WebSocket Chat API
+- **entrypoint.sh** - Startup script with MySQL health check
+- **init-websocketdb.sql** - Database initialization (user and database creation)
+
 ## Architecture
 
 ```
@@ -22,8 +27,10 @@ docker-compose.yml
 ├── MySQL 8.0 Service
 │   ├── Database: concertdb (initialized from ConcertApi/DBV2.0.sql)
 │   ├── Database: soapdb (initialized from SoapApi/init-soapdb.sql)
+│   ├── Database: websocketdb (initialized from WebsocketApi/init-websocketdb.sql)
 │   ├── User: root/rootpassword123
 │   ├── User: soapuser/soappassword123
+│   ├── User: websocketuser/websocketpass123
 │   └── Port: 3306 (exposed on host)
 │
 ├── ConcertAPI Service
@@ -35,14 +42,24 @@ docker-compose.yml
 │   ├── Entrypoint: Waits for MySQL, then starts app
 │   └── Seeding: 3 demo users (admin, user1, user2)
 │
-└── SoapAPI Service
-    ├── Image: .NET 8.0 aspnet runtime
-    ├── Build: Multi-stage from SDK 8.0
-    ├── Port: 8001 (container: 8080)
-    ├── Environment: Development (enables migrations/seeding)
-    ├── Database: soapdb (soapuser)
+├── SoapAPI Service
+│   ├── Image: .NET 8.0 aspnet runtime
+│   ├── Build: Multi-stage from SDK 8.0
+│   ├── Port: 8001 (container: 8080)
+│   ├── Environment: Development (enables migrations/seeding)
+│   ├── Database: soapdb (soapuser)
+│   ├── Entrypoint: Waits for MySQL, then starts app
+│   └── Migrations: Auto-run on startup (EF Core)
+│
+└── WebSocket API Service
+    ├── Image: .NET 10.0 aspnet runtime
+    ├── Build: Multi-stage from SDK 10.0
+    ├── Port: 5001 (container: 5001, HTTPS)
+    ├── Environment: Development (enables migrations)
+    ├── Database: websocketdb (websocketuser)
     ├── Entrypoint: Waits for MySQL, then starts app
-    └── Migrations: Auto-run on startup (EF Core)
+    ├── Migrations: Auto-run on startup (EF Core)
+    └── Certificate: Self-signed cert generated for HTTPS (dev only)
 ```
 
 ## Database Initialization Flow
@@ -63,6 +80,15 @@ docker-compose.yml
 5. Entity Framework migrations run automatically on startup
 6. Creates tables and seeds initial data (1 supplier via migration)
 
+### WebSocket API
+1. MySQL container starts (already initialized)
+2. init-websocketdb.sql is executed during MySQL initialization
+3. Creates: websocketdb database and websocketuser account
+4. WebSocket API starts after MySQL health check passes
+5. Entity Framework migrations run automatically on startup
+6. Creates tables for Users, ChatRooms, ChatMessages, UsersHasChatRooms
+7. Optionally seeds sample data from SeedData.sql
+
 ## How to Use
 
 ### Quick Start
@@ -77,6 +103,7 @@ docker-compose up -d --build
 ### Access Services
 - ConcertAPI: http://localhost:8000/swagger/index.html
 - SoapAPI: http://localhost:8001/swagger/index.html
+- WebSocket API: wss://localhost:5001/ws/{userId}
 
 ### Stop Services
 ```bash
@@ -89,6 +116,7 @@ docker-compose down -v     # Stop and delete volumes (data)
 docker-compose logs -f                 # All services
 docker-compose logs -f concertapi      # Specific service
 docker-compose logs -f soapapi
+docker-compose logs -f websocketapi
 docker-compose logs -f mysql
 ```
 
@@ -99,6 +127,7 @@ Direct MySQL connection:
 - Root User: root/rootpassword123
 - ConcertDB: concertdb (root user)
 - SoapDB: soapdb (soapuser/soappassword123)
+- WebSocketDB: websocketdb (websocketuser/websocketpass123)
 
 ## Key Features
 
@@ -118,6 +147,7 @@ Direct MySQL connection:
 - **Persistence**: MySQL data is stored in a Docker volume (`mysql_data`)
 - **Environment**: Set to Development to enable seeding/migrations
 - **Ports**: Map to 8000 and 8001 on host; adjust in docker-compose.yml if needed
+- **WebSocket**: Uses HTTPS on port 5001; certificate is self-signed (development only)
 - **Health Checks**: 30-second intervals with 30-40 second start period
 
 ## File Dependencies
@@ -133,7 +163,12 @@ SoapApi/
 ├── entrypoint.sh       → Waits for MySQL before starting
 └── init-soapdb.sql     → Creates database and user
 
-docker-compose.yml     → Mounts both .sql files into MySQL init
+WebsocketApi/
+├── Dockerfile          → Uses WebsocketApi.csproj, entrypoint.sh
+├── entrypoint.sh       → Waits for MySQL before starting
+└── init-websocketdb.sql → Creates database and user
+
+docker-compose.yml     → Mounts all three .sql files into MySQL init
 ```
 
 ## Troubleshooting
