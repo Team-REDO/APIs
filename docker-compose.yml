@@ -1,0 +1,103 @@
+# Docker Compose Configuration for Concert API and SOAP API
+# Orchestrates both .NET services with their MySQL databases
+
+version: '3.8'
+
+services:
+  # ============================
+  # Shared MySQL Database Service
+  # ============================
+  mysql:
+    image: mysql:8.0
+    container_name: apis_mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_DATABASE: concertdb
+      MYSQL_USER: concertuser
+      MYSQL_PASSWORD: concertpass123
+      TZ: 'UTC'
+    ports:
+      - "3306:3306"
+    volumes:
+      # Persist MySQL data between container restarts
+      - mysql_data:/var/lib/mysql
+      # Initialize databases with SQL scripts
+      - ./ConcertApi/DBV2.0.sql:/docker-entrypoint-initdb.d/01-concert-init.sql
+      - ./SoapApi/init-soapdb.sql:/docker-entrypoint-initdb.d/02-soap-init.sql
+    networks:
+      - apis_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword123"]
+      timeout: 10s
+      retries: 5
+      interval: 10s
+      start_period: 20s
+    restart: unless-stopped
+
+  # ============================
+  # Concert API Service
+  # ============================
+  concertapi:
+    build:
+      context: ./ConcertApi
+      dockerfile: Dockerfile
+    container_name: apis_concertapi
+    environment:
+      # Override connection string for Docker environment
+      ConnectionStrings__Default: "server=mysql;port=3306;database=concertdb;user=root;password=rootpassword123;"
+    ports:
+      - "8000:8080"
+    networks:
+      - apis_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      timeout: 10s
+      retries: 5
+      interval: 15s
+      start_period: 30s
+    restart: unless-stopped
+
+  # ============================
+  # SOAP API Service
+  # ============================
+  soapapi:
+    build:
+      context: ./SoapApi
+      dockerfile: Dockerfile
+    container_name: apis_soapapi
+    environment:
+      # Database Configuration via Environment Variables
+      SOAP_DB_NAME: soapdb
+      SOAP_DB_USER: soapuser
+      SOAP_DB_USER_PASSWORD: soappassword123
+    ports:
+      - "8001:8080"
+    networks:
+      - apis_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      timeout: 10s
+      retries: 5
+      interval: 15s
+      start_period: 30s
+    restart: unless-stopped
+
+# ============================
+# Networks
+# ============================
+networks:
+  apis_network:
+    driver: bridge
+
+# ============================
+# Volumes
+# ============================
+volumes:
+  mysql_data:
+    driver: local
