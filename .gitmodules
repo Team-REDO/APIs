@@ -2,3 +2,7 @@
 	path = ConcertApi
 	url = https://github.com/HkHino/ConcertApi.git
 	branch = master
+[submodule "SoapApi"]
+	path = SoapApi
+	url = https://github.com/alla2297/SoapApi.git
+	branch = master
