@@ -29,6 +29,10 @@ and then:
 ``` git submodule update ```
 3. Your sub-modules should be downloaded by now (or contact "Camilla")
 
+### How to update the root repository with the newest from sub-modules?
+If there are made changes in the sub-module on GitHub and you want to update the root repository with the newest from all the sub-modules, run this command in terminal:
+``` git pull --recurse-submodules ```
+
 ### How to add a new repo (sub-module)?
 Adding a repository as a sub-module:
 1. Open a terminal (CMD, gitBash, etc.)

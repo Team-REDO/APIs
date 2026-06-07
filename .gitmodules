@@ -9,4 +9,4 @@
 [submodule "WebsocketApi"]
 	path = WebsocketApi
 	url = https://github.com/ACHChristensen/WebsocketAPI_SI_Exam.git
-	branch = ACHChristensen-Dockerfile-1
+	branch = main
