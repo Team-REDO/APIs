@@ -1,2 +1,44 @@
 # APIs
 A collection of REST, SOAP, GraphQL, gRPC &amp; Websocket API's including examples and tests
+
+If you see this you are in the root repository with sub-modules!
+- Contact another developer e.g. "Camilla", if something went wrong or it did not succeceed - we all make mistakes, so let's help eachother out soonest <3 And this README needs to be updated... xD
+
+## Sub-modules commands 
+- Cheat-sheet for developers
+
+### How to add a new repo (sub-module)?
+Adding a repository as a sub-module:
+1. Open a terminal (CMD, gitBash, etc.)
+2. In terminal: Make sure to stand in the folder, where you want to add the repository
+(No need for create a new folder)
+3. Run this command in terminal, BUT...
+Replace [the repository-link] with the same link you will use for cloning the repository:
+``` git submodule add [the repository-link] ```
+4. IF YOU ARE NOT ON A NEW BRANCH YET... create now a new branch before commiting!
+5. Commit the added module with a comment by running this command in terminal, BUT...
+Replace [a message about changes] with a revelevant message:
+``` git commit -am [a message about changes] ```
+6. You can now push YOUR NEW BRANCH to git by standing in your new branch with this command, BUT...
+Replace [your branch-name] with the name of your actuel new branch - should be an exact copy of name!
+``` git push origin [your branch-name] ```
+7. Tjek by refreshing the Github website and see if the commit has been added to YOUR NEW BRANCH
+ - CONTACT another developer e.g. "Camilla", if something went wrong or it did not succeceed - we all make mistakes, so let's help eachother out soonest <3 And this README needs to be updated... xD
+
+
+### How do I update a sub-module iiiin this root repository, if there is any updates in the original repository some-where else?
+To update a sub-module with the newest from branch, write this command in terminal, BUT...
+Replace [the repository-link] with the same link you will use for cloning the repository:
+``` git submodule update --remote [the repository-link] ```
+
+### How to change or see which branch the sub-module updates from?
+To see or change the branch for the sub-modules: 
+1. Go to .gitmodules file in the root of THIS repository (the repository collecting all sub-modules).  
+2. (Optional) - You can change it as well but make sure the branch name is an exact copy of orignal branch name from remote repository (the sub-module's origin).
+
+### How to see local changes (e.g. before pushing)?
+To see your local changes for repository/sub-module run following command, BUT...
+Replace [the repository-name] with the name of the repository:
+``` git diff --cached [the repository-name] ```
+
+To see the correct name for the repository in .gitmodules file in the root of THIS repository (the repository collecting all sub-modules). If the name is not an exact copy it might not work.
