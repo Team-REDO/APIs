@@ -1,5 +1,5 @@
-[submodule "ConcertApi"]
-	path = ConcertApi
+[submodule "RestApi"]
+	path = RestApi/ConcertApi
 	url = https://github.com/HkHino/ConcertApi.git
 	branch = master
 [submodule "SoapApi"]
@@ -10,3 +10,9 @@
 	path = WebsocketApi
 	url = https://github.com/ACHChristensen/WebsocketAPI_SI_Exam.git
 	branch = main
+[submodule "GraphQLApi"]
+	path = GraphQLApi
+	url = https://github.com/LisePetculescu/API-Example-GraphQL.git
+[submodule "gRpcApi"]
+	path = gRpcApi
+	url = https://github.com/ACHChristensen/gRpc_Api.git

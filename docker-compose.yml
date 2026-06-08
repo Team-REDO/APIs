@@ -14,19 +14,18 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword123
       MYSQL_DATABASE: concertdb
       MYSQL_USER: concertuser
-      MYSQL_PASSWORD: concertpass123
       TZ: "UTC"
     ports:
-      - "3307:3307"
+      - "3307:3306"
     volumes:
       # Persist MySQL data between container restarts
       - mysql_data:/var/lib/mysql
       # Initialize databases with SQL scripts
-      - ./ConcertApi/DBV2.0.sql:/docker-entrypoint-initdb.d/01-concert-init.sql
+      - ./RestApi/ConcertApi/DBV2.0.sql:/docker-entrypoint-initdb.d/01-concert-init.sql
       - ./SoapApi/init-soapdb.sql:/docker-entrypoint-initdb.d/02-soap-init.sql
-      - ./WebsocketApi/init-websocketdb.sql:/docker-entrypoint-initdb.d/03-websocket-init.sql
-    networks:
-      - apis_network
+      - ./WebsocketApi/SeedData.sql:/docker-entrypoint-initdb.d/03-websocket-init.sql
+    #networks:
+    #- apis_network
     healthcheck:
       test:
         [
@@ -37,39 +36,55 @@ services:
           "localhost",
           "-u",
           "root",
-          "-prootpassword123",
+          "-p rootpassword123",
         ]
       timeout: 10s
       retries: 5
       interval: 10s
       start_period: 20s
-    restart: unless-stopped
 
-  # ============================
-  # Concert API Service
-  # ============================
-  concertapi:
-    build:
-      context: ./ConcertApi
-      dockerfile: Dockerfile
-    container_name: apis_concertapi
+  postgres:
+    image: postgres:16
+    container_name: lotr_graphql_postgres
     environment:
-      # Override connection string for Docker environment
-      ConnectionStrings__Default: "server=mysql;port=3307;database=concertdb;user=root;password=rootpassword123;"
+      POSTGRES_USER: lotr_user
+      POSTGRES_PASSWORD: lotr_password
+      POSTGRES_DB: lotr_wiki_db
     ports:
-      - "8000:8080"
-    networks:
-      - apis_network
+      - "5432:5432"
+    volumes:
+      - ./GraphQLApi/lotr-graphql-wiki/server/lotr_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "lotr_user", "-d", "lotr_wiki_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  # ============================
+  # Rest API Service
+  # ============================
+  restapi:
+    build:
+      context: ./RestApi/ConcertApi
+      dockerfile: Dockerfile
+    container_name: apis_restapi
+    environment:
+      # Database Configuration via Environment Variables
+      CONCERT_DB_NAME: concertdb
+      CONCERT_DB_USER: root
+      CONCERT_DB_USER_PASSWORD: rootpassword123
+    ports:
+      - "5085:5085"
+    #networks:
+    #- apis_network
     depends_on:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      test: ["CMD", "curl", "-f", "http://localhost:5085/swagger/index.html"]
       timeout: 10s
       retries: 5
       interval: 15s
       start_period: 30s
-    restart: unless-stopped
 
   # ============================
   # SOAP API Service
@@ -85,19 +100,18 @@ services:
       SOAP_DB_USER: soapuser
       SOAP_DB_USER_PASSWORD: soappassword123
     ports:
-      - "8001:8080"
-    networks:
-      - apis_network
+      - "5298:5298"
+    #networks:
+    #- apis_network
     depends_on:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      test: ["CMD", "curl", "-f", "http://localhost:5298/swagger/index.html"]
       timeout: 10s
       retries: 5
       interval: 15s
       start_period: 30s
-    restart: unless-stopped
 
   # ============================
   # WebSocket API Service
@@ -108,12 +122,14 @@ services:
       dockerfile: Dockerfile
     container_name: apis_websocketapi
     environment:
-      # Database Configuration
-      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3307;Database=websocketdb;User=websocketuser;Password=websocketpass123;"
+      # Database Configuration via Environment Variables
+      WEBSOCKET_DB_NAME: websocketdb
+      WEBSOCKET_DB_USER: websocketuser
+      WEBSOCKET_DB_USER_PASSWORD: websocketpass123
     ports:
       - "5001:5001"
-    networks:
-      - apis_network
+    #networks:
+    #- apis_network
     depends_on:
       mysql:
         condition: service_healthy
@@ -130,14 +146,68 @@ services:
       retries: 5
       interval: 15s
       start_period: 30s
-    restart: unless-stopped
+
+  # ============================
+  # gRPC API Service
+  # ============================
+  grpcapi:
+    build:
+      context: ./gRpcApi/g
+      dockerfile: Dockerfile
+    container_name: apis_grpcapi
+    environment:
+      # Database Configuration via Environment Variables
+      GRPC_DB_NAME: grpcdb
+      GRPC_DB_USER: grpcuser
+      GRPC_DB_USER_PASSWORD: grpcpass123
+    ports:
+      - "5068:5068"
+    #networks:
+    #- apis_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "--insecure",
+          "https://localhost:5068/api/csrf-token",
+        ]
+      timeout: 10s
+      retries: 5
+      interval: 15s
+      start_period: 30s
+
+  # ============================
+  # GraphQL API Service
+  # ============================
+  graphqlapi:
+    build:
+      context: ./GraphQLApi/lotr-graphql-wiki/server
+      dockerfile: Dockerfile
+    container_name: apis_graphqlapi
+    environment:
+      DATABASE_URL: postgresql://lotr_user:lotr_password@postgres:5432/lotr_wiki_db?schema=public
+      NODE_ENV: development
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    #networks:
+    #- apis_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npm run seed"
 
 # ============================
 # Networks
 # ============================
-networks:
-  apis_network:
-    driver: bridge
+#networks:
+# apis_network:
+#driver: bridge
 
 # ============================
 # Volumes
@@ -145,3 +215,4 @@ networks:
 volumes:
   mysql_data:
     driver: local
+  lotr_postgres_data:
