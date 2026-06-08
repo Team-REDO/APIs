@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudio,visualstudiocode,dotenv,dotnetcore,node,webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,visualstudio,visualstudiocode,dotenv,dotnetcore,node,webstorm
 
+### POST-MAN ####
+.postman
+postman/
+
 ### dotenv ###
 .env
 

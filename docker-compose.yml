@@ -47,8 +47,8 @@ services:
     image: postgres:16
     container_name: lotr_graphql_postgres
     environment:
-      POSTGRES_USER: lotr_user
       POSTGRES_PASSWORD: lotr_password
+      POSTGRES_USER: lotr_user
       POSTGRES_DB: lotr_wiki_db
     ports:
       - "5432:5432"
@@ -106,12 +106,13 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5298/swagger/index.html"]
-      timeout: 10s
-      retries: 5
-      interval: 15s
-      start_period: 30s
+    command: sh -c "dotnet ef database update && dotnet SoapApi.dll"
+    #healthcheck:
+    #  test: ["CMD", "curl", "-f", "http://localhost:5298/swagger/index.html"]
+    #  timeout: 10s
+    #  retries: 5
+    #  interval: 15s
+    #  start_period: 30s
 
   # ============================
   # WebSocket API Service
@@ -190,7 +191,7 @@ services:
       dockerfile: Dockerfile
     container_name: apis_graphqlapi
     environment:
-      DATABASE_URL: postgresql://lotr_user:lotr_password@postgres:5432/lotr_wiki_db?schema=public
+      DATABASE_URL: jdbc:postgresql://localhost:5432/postgres?user=lotr_user&password=lotr_password&schema=public
       NODE_ENV: development
       PORT: 4000
     ports:
