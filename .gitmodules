@@ -16,3 +16,7 @@
 [submodule "gRpcApi"]
 	path = gRpcApi
 	url = https://github.com/ACHChristensen/gRpc_Api.git
+[submodule "RestApiV2"]
+	path = RestApiV2
+	url = https://github.com/HkHino/ConcertApi
+	branch = master

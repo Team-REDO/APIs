@@ -1,1 +1,0 @@
-“Run db/init.sql in MySQL Workbench to create schema + seed data.”
