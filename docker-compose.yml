@@ -53,7 +53,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./GraphQLApi/lotr-graphql-wiki/server/lotr_postgres_data:/var/lib/postgresql/data
+      - lotr_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "lotr_user", "-d", "lotr_wiki_db"]
       interval: 5s
@@ -191,7 +191,7 @@ services:
       dockerfile: Dockerfile
     container_name: apis_graphqlapi
     environment:
-      DATABASE_URL: jdbc:postgresql://localhost:5432/postgres?user=lotr_user&password=lotr_password&schema=public
+      DATABASE_URL: postgresql://lotr_user:lotr_password@postgres:5432/lotr_wiki_db?schema=public
       NODE_ENV: development
       PORT: 4000
     ports:
@@ -201,7 +201,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "npm run seed"
+    #command: sh -c "npm run start && npm run seed"
+    #command: sh -c "npx prisma generate && npm run start"
 
 # ============================
 # Networks
