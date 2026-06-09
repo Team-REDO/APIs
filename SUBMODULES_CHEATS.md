@@ -43,7 +43,7 @@ Replace [your branch-name] with the name of your actuel new branch - should be a
  - CONTACT another developer e.g. "Camilla", if something went wrong or it did not succeceed - we all make mistakes, so let's help eachother out soonest <3 And this README needs to be updated... xD
 
 
-### How do I update a sub-module iiiin this root repository, if there is any updates in the original repository some-where else?
+### How do I update from a sub-module iiiin this root repository, if there is any updates in the original repository some-where else?
 This one it tricky...
 To update a sub-module with the newest from branch:
 1. Stand in terminal in the root of this repository (the repository collecting all sub-modules)!
@@ -56,15 +56,14 @@ Replace [the repository/sub-module -name] with the exact name from .git folder o
 If there are made changes in the sub-module on GitHub and you want to update the root repository with the newest from all the sub-modules, run this command in terminal:
 ``` git pull --recurse-submodules ```
 
-### How to change or see which branch the sub-module updates from?
+### How to change or see which branch the sub-module updates comes from?
 VERY TRICKY - Not recommended for beginners, but here is how you can do it:
 To see or change the branch for the sub-modules: 
 1. Go to .gitmodules file in the root of THIS repository (the repository collecting all sub-modules).  
 2. (Optional) - You can change it as well but make sure the branch name is an exact copy of orignal branch name from remote repository (the sub-module's origin).
 
-### How to see local changes (e.g. before pushing)?
+### CAMILLA IS INSUCRE ABOUT THIS ONE: How to see local changes (e.g. before pushing)?
 To see your local changes for repository/sub-module run following command, BUT...
 Replace [the repository/sub-module -name] with the name of the repository:
 ``` git diff --cached [the repository/sub-module -name] ```
-
 To see the correct name for the repository in .gitmodules file in the root of THIS repository (the repository collecting all sub-modules). If the name is not an exact copy it might not work.
