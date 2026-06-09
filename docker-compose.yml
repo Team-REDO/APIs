@@ -64,7 +64,7 @@ services:
   # ============================
   restapi:
     build:
-      context: ./RestApi/ConcertApi
+      context: ./RestApiV2
       dockerfile: Dockerfile
     container_name: apis_restapi
     environment:
