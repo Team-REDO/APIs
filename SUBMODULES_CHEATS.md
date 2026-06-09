@@ -30,8 +30,8 @@ Adding a repository as a sub-module:
 2. In terminal: Make sure to stand in the folder, where you want to add the repository
 (No need for create a new folder)
 3. Run this command in terminal, BUT...
-Replace [the repository/sub-module -link] with the same link you will use for cloning the repository:
-``` git submodule add [the repository/sub-module -link] ```
+Replace [the repository/sub-module -link] with the same link you will use for cloning the repository and [sub-module-folder-name] IS OPTIONAL AND NOT NEEDED - but write the name of the folder you want to have for the sub-module:
+``` git submodule add [the repository/sub-module -link] [sub-module-folder-name] ```
 4. IF YOU ARE NOT ON A NEW BRANCH YET... create now a new branch before commiting!
 5. Commit the added module with a comment by running this command in terminal, BUT...
 Replace [a message about changes] with a revelevant message:
